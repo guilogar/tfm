@@ -34,7 +34,7 @@ COSMOS_CONTAINER_ID=...
 ### frontend/.env
 
 ```
-REACT_APP_BACKEND_HOST=http://localhost:3000
+REACT_APP_BACKEND_HOST=http://localhost:4000
 REACT_APP_CHECK_SESSION_TIME=1000000
 ```
 
