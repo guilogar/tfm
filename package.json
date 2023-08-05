@@ -1,0 +1,30 @@
+{
+  "name": "smartrural",
+  "version": "1.0.0",
+  "description": "Repository for make final master project",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "run-p install:*",
+    "install:backend": "npm install --prefix ./backend",
+    "install:frontend": "npm install --prefix ./frontend",
+    "install:simulator": "npm install --prefix ./emulator",
+    "start:backend": "npm run start --prefix ./backend",
+    "start:frontend": "npm run start --prefix ./frontend",
+    "start": "run-p start:backend start:frontend",
+    "backend:makeNewData": "npm run makeNewData --prefix ./backend",
+    "backend:makeNewDataProduction": "npm run makeNewDataProduction --prefix ./backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guilogar/tfm.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guilogar/tfm/issues"
+  },
+  "homepage": "https://github.com/guilogar/tfm#readme",
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}
