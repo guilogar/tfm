@@ -4,7 +4,7 @@
   "description": "",
   "main": "simulator.js",
   "scripts": {
-    "simulator": "node simulator.js"
+    "start": "node simulator.js"
   },
   "author": "guilogar",
   "license": "GNU/GPL",

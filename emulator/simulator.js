@@ -3,15 +3,9 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-// Using the Azure CLI:
-// az iot hub device-identity show-connection-string --hub-name {YourIoTHubName} --device-id MyNodeDevice --output table
-const connectionString = process.env.CONNECTION_STRING;
-
-const Mqtt = require('azure-iot-device-mqtt').Mqtt;
-const DeviceClient = require('azure-iot-device').Client
-const Message = require('azure-iot-device').Message;
-
-const client = DeviceClient.fromConnectionString(connectionString, Mqtt);
+const {
+  createSimpleEvent,
+} = require('../backend/routes/services/create-simple-event');
 
 const getWindDirection = (value) => {
   if (value <= 0.25) {
@@ -24,39 +18,32 @@ const getWindDirection = (value) => {
     return 'O';
   }
 };
-// Create a message and send it to the IoT hub
+
 setInterval(async () => {
-  const sensorId           = parseInt(1  + (Math.random() * 100));
-  const roomTemperature    = 20 + (Math.random() * 15);
-  const airHumidity        = 20 + (Math.random() * 20);
-  const groundHumidity     = 20 + (Math.random() * 20);
-  const litrePerMeterWater = 20 + (Math.random() * 20);
-  const windForce          = 20 + (Math.random() * 20);
-  const countIllumination  = 20 + (Math.random() * 20);
-  const windDirection      = getWindDirection(Math.random());
+  const sensorId = parseInt(1 + Math.random() * 100);
+  const event = {
+    groundHumidity: 20 + Math.random() * 20,
+    litrePerMeterWater: 20 + Math.random() * 20,
+    windForce: 20 + Math.random() * 20,
+    countIllumination: 20 + Math.random() * 20,
+    windDirection: getWindDirection(Math.random()),
+    isCeilingGreenhouseOpen: Math.random() > 0.5 ? true : false,
+    isWallGreenhouseOpen: Math.random() > 0.5 ? true : false,
+    // roomTemperature: 20 + Math.random() * 15,
+    // airHumidity: 20 + Math.random() * 20,
+    // isAtDaytime: Math.random() > 0.1 ? true : false,
+    // isRaining: Math.random() > 0.1 ? true : false,
+    // canPhotosynthesisImprove: Math.random() > 0.1 ? true : false,
+    roomTemperature: 20,
+    airHumidity: 20,
+    isAtDaytime: true,
+    isRaining: false,
+    canPhotosynthesisImprove: true,
+  };
 
-  const isCeilingGreenhouseOpen  = (Math.random() > 0.5) ? true : false;
-  const isWallGreenhouseOpen     = (Math.random() > 0.5) ? true : false;
-  // const isAtDaytime              = (Math.random() > 0.5) ? true : false;
-  // const isRaining                = (Math.random() > 0.5) ? true : false;
-  // const canPhotosynthesisImprove = (Math.random() > 0.5) ? true : false;
-  const isAtDaytime              = (Math.random() > 0.1) ? true : false;
-  const isRaining                = (Math.random() > 0.1) ? true : false;
-  const canPhotosynthesisImprove = (Math.random() > 0.1) ? true : false;
-
-  const message = new Message(JSON.stringify({
-    sensorId, roomTemperature, airHumidity,
-    groundHumidity, litrePerMeterWater, windForce,
-    countIllumination, windDirection, isRaining,
-    isCeilingGreenhouseOpen, isWallGreenhouseOpen,
-    isAtDaytime, canPhotosynthesisImprove
-  }));
-
-  console.log('Sending message: ' + message.getData());
   try {
-    await client.sendEvent(message);
-    console.log('message sent');
+    await createSimpleEvent(sensorId, event);
   } catch (error) {
-    console.error('send error: ' + error.toString());
+    console.error('send error: ' + error);
   }
 }, process.env.TIME_INTERVAL || 30000);

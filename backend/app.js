@@ -8,22 +8,28 @@ const baseAPI = '/api/v1';
 const cors = require('cors');
 
 const args = process.argv.slice(2);
-process.env.ENVFILE = (args[0]) ? args[0] : '.env';
+process.env.ENVFILE = args[0] ? args[0] : '.env';
 
 const dotenv = require('dotenv');
 dotenv.config({ path: process.env.ENVFILE });
 
-app.use(cors({
-  origin: '*'
-}));
-app.use(bodyParser.json({
-  limit: '1024mb'
-}));
+app.use(
+  cors({
+    origin: '*',
+  })
+);
+app.use(
+  bodyParser.json({
+    limit: '1024mb',
+  })
+);
 app.use(logger('dev'));
-app.use(bodyParser.urlencoded({
-  extended: true,
-  limit: '1024mb'
-}));
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: '1024mb',
+  })
+);
 
 const routes = require('./routes/routes');
 
@@ -37,10 +43,13 @@ const sequelize = require('./database/sequelize');
   await sequelize.sync();
 })();
 
-const { initCronTab } = require('./cron-tab');
-initCronTab();
+const { initCronTabGetEvents } = require('./cron-tab-get-events');
+initCronTabGetEvents();
+
+const { initCronTabSetEvents } = require('./cron-tab-set-events');
+initCronTabSetEvents();
 
 const server = http.createServer(app);
-server.listen(PORT, function() {
-    console.log('Server up and running on localhost:' + PORT);
+server.listen(PORT, function () {
+  console.log('Server up and running on localhost:' + PORT);
 });

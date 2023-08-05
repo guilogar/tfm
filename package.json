@@ -10,6 +10,7 @@
     "install:simulator": "npm install --prefix ./emulator",
     "start:backend": "npm run start --prefix ./backend",
     "start:frontend": "npm run start --prefix ./frontend",
+    "start:emulator": "npm run start --prefix ./emulator",
     "start": "run-p start:backend start:frontend",
     "backend:makeNewData": "npm run makeNewData --prefix ./backend",
     "backend:makeNewDataProduction": "npm run makeNewDataProduction --prefix ./backend"

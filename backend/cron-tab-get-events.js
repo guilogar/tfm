@@ -9,14 +9,13 @@
 // # * * * * * *
 const cron = require('node-cron');
 const {
-  sendNotificationToUser
+  sendNotificationToUser,
 } = require('./routes/services/send-notification-to-user');
 const {
-  getAllEventFromCosmos, removeEventsFromCosmos
+  getAllEventFromCosmos,
+  removeEventsFromCosmos,
 } = require('./routes/services/get-event-from-cosmos');
-const {
-  checkEvent
-} = require('./routes/services/check-event');
+const { checkEvent } = require('./routes/services/check-event');
 
 const ACTIONS = require('./routes/constans/event-actions');
 
@@ -26,75 +25,63 @@ const Notification = require('./database/models/Notification');
 const UserSettings = require('./database/models/UserSettings');
 const FarmableLand = require('./database/models/FarmableLand');
 
-const initCronTab = () => {
+const initCronTabGetEvents = () => {
   cron.schedule('* * * * *', async () => {
-    try
-    {
+    try {
       const items = await getAllEventFromCosmos();
       const eventsFired = await checkEvent(items);
-      for (const eventFired of eventsFired)
-      {
-        const {
-          userId, sensorId, eventId,
-          userEventId, value, action
-        } = eventFired;
+      for (const eventFired of eventsFired) {
+        const { userId, sensorId, eventId, userEventId, value, action } =
+          eventFired;
 
         const userSensor = await UserSensor.findOne({
           where: {
-            id: sensorId
+            id: sensorId,
           },
-          include: [
-            { model: FarmableLand }
-          ]
+          include: [{ model: FarmableLand }],
         });
 
         const event = await Event.findOne({
           where: {
-            id: eventId
-          }
+            id: eventId,
+          },
         });
 
         const userSettings = await UserSettings.findOne({
           where: {
-            id: userId
-          }
+            id: userId,
+          },
         });
 
-        if(action === 'AUTOMATIC' ||
-          (
-            action === 'SETTINGS' &&
-            userSettings.defaultEventAction === 'AUTOMATIC'
-          )
-        )
-        {
+        if (
+          action === 'AUTOMATIC' ||
+          (action === 'SETTINGS' &&
+            userSettings.defaultEventAction === 'AUTOMATIC')
+        ) {
           const actionFunction = ACTIONS[event.name];
           await actionFunction(userSensor.FarmableLand.id);
         }
 
-        const body = (
+        const body =
           action === 'AUTOMATIC' ||
-          (
-            action === 'SETTINGS' &&
-            userSettings.defaultEventAction === 'AUTOMATIC'
-          )
-        ) ?
-          `El Evento ${event.name} ha sido disparado con el ` +
-          `sensor "${userSensor.name}" y en el terreno ${userSensor.FarmableLand.name}. ` +
-          `Se ha realizado la accion automatizada.`
-          :
-          `El Evento ${event.name} ha sido disparado con el ` +
-          `sensor "${userSensor.name}" y en el terreno ${userSensor.FarmableLand.name}. ` +
-          `Clicke aquí para realizar la acción asociada al evento.`;
+          (action === 'SETTINGS' &&
+            userSettings.defaultEventAction === 'AUTOMATIC')
+            ? `El Evento ${event.name} ha sido disparado con el ` +
+              `sensor "${userSensor.name}" y en el terreno "${userSensor.FarmableLand.name}". ` +
+              `Se ha realizado la accion automatizada.`
+            : `El Evento ${event.name} ha sido disparado con el ` +
+              `sensor "${userSensor.name}" y en el terreno "${userSensor.FarmableLand.name}". ` +
+              `Clicke aquí para realizar la acción asociada al evento.`;
 
         const notification = {
           title: `Evento ${event.name}`,
-          body: body
+          body: body,
         };
 
         await Notification.create({
           title: notification.title,
           body: notification.body,
-          UserId: userId
+          UserId: userId,
         });
 
         try {
@@ -117,5 +104,5 @@ const initCronTab = () => {
 };
 
 module.exports = {
-  initCronTab
+  initCronTabGetEvents,
 };
