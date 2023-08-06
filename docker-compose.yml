@@ -1,0 +1,42 @@
+version: '3.4'
+services:
+  postgresql:
+    image: postgres:9.6
+    volumes:
+      - smartrural_postgresql:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=smartrural
+      - POSTGRES_USER=smartrural
+      - POSTGRES_PASSWORD=smartrural
+  cosmosdb:
+    container_name: cosmosdb
+    image: 'mcr.microsoft.com/cosmosdb/linux/azure-cosmos-emulator'
+    tty: true
+    restart: always
+    mem_limit: 2G
+    cpu_count: 2
+    environment:
+      - AZURE_COSMOS_EMULATOR_PARTITION_COUNT=10
+      - AZURE_COSMOS_EMULATOR_ENABLE_DATA_PERSISTENCE=true
+    ports:
+      - '8081:8081'
+      - '8900:8900'
+      - '8901:8901'
+      - '8979:8979'
+      - '10250:10250'
+      - '10251:10251'
+      - '10252:10252'
+      - '10253:10253'
+      - '10254:10254'
+      - '10255:10255'
+      - '10256:10256'
+      - '10350:10350'
+    volumes:
+      - smartrural_cosmosdb:/data/db
+volumes:
+  smartrural_postgresql:
+    external: false
+  smartrural_cosmosdb:
+    external: false
