@@ -6,16 +6,19 @@ const router = express.Router();
 const { Op } = require('sequelize');
 
 const Notification = require('../database/models/Notification');
-const { getUserFromJwt, getJwtFromRequest } = require('./services/get-user-auth');
-const { getFilterNotification } = require('./constans/filters');
+const {
+  getUserFromJwt,
+  getJwtFromRequest,
+} = require('./services/get-user-auth');
+const { getFilterNotification } = require('./constants/filters');
 
 router.get('/notifications', async (req, res) => {
   const jwt = getJwtFromRequest(req);
   const user = await getUserFromJwt(jwt);
-  const filter = (req.query.filter !== undefined) ? req.query.filter : undefined;
+  const filter = req.query.filter !== undefined ? req.query.filter : undefined;
 
   let where = {
-    UserId: user.id
+    UserId: user.id,
   };
 
   if (filter !== undefined) {
@@ -24,13 +27,11 @@ router.get('/notifications', async (req, res) => {
 
   const notifications = await Notification.findAll({
     where: where,
-    order: [
-      ['createdAt', 'DESC'],
-    ],
+    order: [['createdAt', 'DESC']],
   });
 
   res.status(200).send({
-    notifications: notifications
+    notifications: notifications,
   });
 });
 

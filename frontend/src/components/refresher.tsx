@@ -1,7 +1,18 @@
-import { IonItem, IonRefresher, IonRefresherContent, IonToast } from '@ionic/react';
+import {
+  IonItem,
+  IonRefresher,
+  IonRefresherContent,
+  IonToast,
+} from '@ionic/react';
 import React, { useState, useRef } from 'react';
 
-const Refresher: React.FC<{ refreshAction: Function }> = ({ refreshAction }) => {
+import { useTranslation } from 'react-i18next';
+
+const Refresher: React.FC<{ refreshAction: Function }> = ({
+  refreshAction,
+}) => {
+  const { t } = useTranslation();
+
   const [showCompleteToast, setShowCompleteToast] = useState<boolean>(false);
   const ionRefresherRef = useRef<HTMLIonRefresherElement>(null);
 
@@ -18,12 +29,12 @@ const Refresher: React.FC<{ refreshAction: Function }> = ({ refreshAction }) => 
       </IonRefresher>
       <IonToast
         isOpen={showCompleteToast}
-        message="Actualización completada"
+        message={t('REFRESHER_UPDATE_COMPLETED')}
         duration={2000}
         onDidDismiss={() => setShowCompleteToast(false)}
       />
-      <IonItem lines='none'></IonItem>
-      <IonItem lines='none'></IonItem>
+      <IonItem lines="none"></IonItem>
+      <IonItem lines="none"></IonItem>
     </div>
   );
 };

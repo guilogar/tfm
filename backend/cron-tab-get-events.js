@@ -17,7 +17,7 @@ const {
 } = require('./routes/services/get-event-from-cosmos');
 const { checkEvent } = require('./routes/services/check-event');
 
-const ACTIONS = require('./routes/constans/event-actions');
+const ACTIONS = require('./routes/constants/event-actions');
 
 const UserSensor = require('./database/models/UserSensor');
 const Event = require('./database/models/Event');

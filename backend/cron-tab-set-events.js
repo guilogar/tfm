@@ -12,32 +12,33 @@ const { setEventToCosmos } = require('./routes/services/set-event-to-cosmos');
 const { createTimeFrameEvent } = require('./eep');
 
 const SimpleEvent = require('./database/models/SimpleEvent');
+const Event = require('./database/models/Event');
 
-const initCronTabSetEvents = () => {
-  // For Irrigate Complex Event
-  const verificationFunction = (event) => {
-    const { isAtDaytime, isRaining, airHumidity, roomTemperature } = event;
-    return (
-      isAtDaytime === true &&
-      isRaining === false &&
-      airHumidity < 30 &&
-      roomTemperature < 25
-    );
-  };
-  const callbackEmit = async (event) => {
-    const { eventFired, sensorId, events } = event;
-    if (eventFired) {
-      await setEventToCosmos({
-        sensorId: sensorId, // sensor id
-        EventFired: 'Irrigate', // name of the event
-        count: events.length, // quantity of events
-      });
-    }
-  };
-  const periodic = createTimeFrameEvent({
-    verificationFunction,
-    callbackEmit,
-  });
+const COMPLEX_EVENT_VERIFICATION_FUNCTIONS = require('./routes/constants/event-verification-functions');
+
+const initCronTabSetEvents = async () => {
+  let timeFrames = [];
+
+  const complexEvents = await Event.findAll();
+  for (const complexEvent of complexEvents) {
+    const callbackEmit = async (event) => {
+      const { eventFired, sensorId, events } = event;
+      if (eventFired) {
+        await setEventToCosmos({
+          sensorId: sensorId, // sensor id
+          EventFired: complexEvent.name, // name of the event
+          count: events.length, // quantity of simple events
+        });
+      }
+    };
+    const periodic = createTimeFrameEvent({
+      verificationFunction:
+        COMPLEX_EVENT_VERIFICATION_FUNCTIONS[complexEvent.name],
+      callbackEmit,
+    });
+
+    timeFrames.push(periodic);
+  }
 
   cron.schedule('* * * * *', async () => {
     try {
@@ -51,13 +52,16 @@ const initCronTabSetEvents = () => {
           ...simpleEvent.event,
           sensorId: parseInt(simpleEvent.sensorId),
         };
-        periodic.enqueue(event);
-
+        for (const timeFrame of timeFrames) {
+          timeFrame.enqueue(event);
+        }
         await simpleEvent.update({
           analyzed: true,
         });
       }
-      periodic.tick();
+      for (const timeFrame of timeFrames) {
+        timeFrame.tick();
+      }
     } catch (error) {
       console.log(error);
     }

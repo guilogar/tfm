@@ -12,27 +12,29 @@ const Crop = require('../database/models/Crop');
 const CropPhytosanitary = require('../database/models/CropPhytosanitary');
 const Phytosanitary = require('../database/models/Phytosanitary');
 
-const { getUserFromJwt, getJwtFromRequest } = require('../routes/services/get-user-auth');
-const { getFilterPhytosanitary } = require('./constans/filters');
+const {
+  getUserFromJwt,
+  getJwtFromRequest,
+} = require('../routes/services/get-user-auth');
+const { getFilterPhytosanitary } = require('./constants/filters');
 
 router.get('/cropPhytosanitary', async (req, res) => {
-  const farmId = (req.query.farmId !== undefined) ? JSON.parse(req.query.farmId) : undefined;
-  const cropId = (req.query.cropId !== undefined) ? JSON.parse(req.query.cropId) : undefined;
-  const filter = (req.query.filter !== undefined) ? req.query.filter : undefined;
+  const farmId =
+    req.query.farmId !== undefined ? JSON.parse(req.query.farmId) : undefined;
+  const cropId =
+    req.query.cropId !== undefined ? JSON.parse(req.query.cropId) : undefined;
+  const filter = req.query.filter !== undefined ? req.query.filter : undefined;
 
   const jwt = getJwtFromRequest(req);
   const user = await getUserFromJwt(jwt);
 
   let where = {};
 
-  if(farmId !== undefined) {
+  if (farmId !== undefined) {
     where[Op.and] = [
-      sequelize.where(
-        sequelize.cast(sequelize.col('FarmableLand.id'), 'int'),
-        {
-          [Op.eq]: farmId
-        }
-      ),
+      sequelize.where(sequelize.cast(sequelize.col('FarmableLand.id'), 'int'), {
+        [Op.eq]: farmId,
+      }),
     ];
   }
 
@@ -42,7 +44,7 @@ router.get('/cropPhytosanitary', async (req, res) => {
       sequelize.where(
         sequelize.cast(sequelize.col('FarmableLand.UserId'), 'int'),
         {
-          [Op.eq]: user.id
+          [Op.eq]: user.id,
         }
       ),
     ];
@@ -55,9 +57,7 @@ router.get('/cropPhytosanitary', async (req, res) => {
       { model: Crop },
       { model: Phytosanitary },
     ],
-    order: [
-      ['createdAt', 'DESC'],
-    ],
+    order: [['createdAt', 'DESC']],
   });
 
   let farmIds = [];
@@ -69,41 +69,44 @@ router.get('/cropPhytosanitary', async (req, res) => {
 
   const farms = await FarmableLand.findAll({
     where: {
-      id: farmIds
-    }
+      id: farmIds,
+    },
   });
 
   let farmableLands = [];
-  for(const farm of farms) {
+  for (const farm of farms) {
     let farmableLand = farm.toJSON();
     farmableLand.crops = [];
 
-    const where = (cropId !== undefined) ? {
-      CropId: cropId,
-      FarmableLandId: farm.id
-    } : {
-      FarmableLandId: farm.id
-    };
+    const where =
+      cropId !== undefined
+        ? {
+            CropId: cropId,
+            FarmableLandId: farm.id,
+          }
+        : {
+            FarmableLandId: farm.id,
+          };
 
     const farmsCrops = await FarmableLandCrop.findAll({
-      where
+      where,
     });
 
-    for(const farmCrop of farmsCrops) {
+    for (const farmCrop of farmsCrops) {
       const crops = await Crop.findAll({
         where: {
-          id: farmCrop.CropId
-        }
+          id: farmCrop.CropId,
+        },
       });
 
-      for(const crop of crops) {
+      for (const crop of crops) {
         let cropFarmableLand = crop.toJSON();
 
         const cropsPhytosanitary = await CropPhytosanitary.findAll({
           where: {
             FarmableLandId: farmableLand.id,
-            CropId: cropFarmableLand.id
-          }
+            CropId: cropFarmableLand.id,
+          },
         });
 
         let phytosanitaryIds = [];
@@ -114,8 +117,8 @@ router.get('/cropPhytosanitary', async (req, res) => {
 
         const phytosanitarys = await Phytosanitary.findAll({
           where: {
-            id: phytosanitaryIds
-          }
+            id: phytosanitaryIds,
+          },
         });
 
         cropFarmableLand.phytosanitarys = [];
@@ -130,7 +133,7 @@ router.get('/cropPhytosanitary', async (req, res) => {
   }
 
   res.status(200).send({
-    lands: farmableLands
+    lands: farmableLands,
   });
 });
 
@@ -142,27 +145,27 @@ router.post('/cropPhytosanitary', async (req, res) => {
     const farm = await FarmableLand.findOne({
       where: {
         id: req.body.farmId,
-        UserId: user.id
-      }
+        UserId: user.id,
+      },
     });
 
-    if(farm) {
+    if (farm) {
       await CropPhytosanitary.create({
         FarmableLandId: req.body.farmId,
         CropId: req.body.cropId,
-        PhytosanitaryId: req.body.phytosanitaryId
+        PhytosanitaryId: req.body.phytosanitaryId,
       });
-      req.url = `/cropPhytosanitary?farmId=${req.params.farmId}&cropId=${req.body.cropId}`
+      req.url = `/cropPhytosanitary?farmId=${req.params.farmId}&cropId=${req.body.cropId}`;
       req.method = `GET`;
       return router.handle(req, res);
     } else {
       res.status(404).send({
-        error: 'not farm allowed'
+        error: 'not farm allowed',
       });
     }
   } catch (error) {
     res.status(412).send({
-      error: 'unknow error'
+      error: 'unknow error',
     });
   }
 });
@@ -175,16 +178,16 @@ router.put('/cropPhytosanitary/:farmId/:cropId', async (req, res) => {
     let farm = await FarmableLand.findOne({
       where: {
         id: req.params.farmId,
-        UserId: user.id
-      }
+        UserId: user.id,
+      },
     });
 
-    if(farm) {
+    if (farm) {
       await CropPhytosanitary.destroy({
         where: {
           FarmableLandId: req.params.farmId,
           CropId: req.params.cropId,
-        }
+        },
       });
 
       const phytosanitarys = req.body.phytosanitarys;
@@ -192,21 +195,21 @@ router.put('/cropPhytosanitary/:farmId/:cropId', async (req, res) => {
         await CropPhytosanitary.create({
           FarmableLandId: req.params.farmId,
           CropId: req.body.cropId,
-          PhytosanitaryId: phytosanitary.id
+          PhytosanitaryId: phytosanitary.id,
         });
       }
-      req.url = `/cropPhytosanitary?farmId=${req.params.farmId}&cropId=${req.body.cropId}`
+      req.url = `/cropPhytosanitary?farmId=${req.params.farmId}&cropId=${req.body.cropId}`;
       req.method = `GET`;
       return router.handle(req, res);
     } else {
       res.status(404).send({
-        error: 'not farm allowed'
+        error: 'not farm allowed',
       });
     }
   } catch (error) {
     console.log(error);
     res.status(412).send({
-      error: 'unknow error'
+      error: 'unknow error',
     });
   }
 });

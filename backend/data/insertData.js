@@ -65,9 +65,11 @@ async function insertDataTable() {
     await createEvent('OpenWallGreenhouse', 'OpenWallGreenhouse Event')
   );
 
-  await assignEventToUser(user.id, events[0].id, 'AUTOMATIC');
+  await assignEventToUser(user.id, events[0].id, 'MANUAL');
 
-  await assignEventToUser(user.id, events[1].id, 'MANUAL');
+  await assignEventToUser(user.id, events[1].id, 'AUTOMATIC');
+
+  await assignEventToUser(user.id, events[2].id, 'AUTOMATIC');
 
   for (let i = 0; i < 5; i++) {
     const eventNotification = Math.random() > 0.5 ? events[0] : events[1];
