@@ -10,26 +10,27 @@ const FarmableLand = require('../database/models/FarmableLand');
 const FarmableLandCrop = require('../database/models/FarmableLandCrop');
 const Crop = require('../database/models/Crop');
 
-const { getUserFromJwt, getJwtFromRequest } = require('../routes/services/get-user-auth');
-const { getFilterCrop } = require('./constans/filters');
+const {
+  getUserFromJwt,
+  getJwtFromRequest,
+} = require('../routes/services/get-user-auth');
+const { getFilterCrop } = require('./constants/filters');
 
 router.get('/farmableLandCrop', async (req, res) => {
-  const farmId = (req.query.farmId !== undefined) ? JSON.parse(req.query.farmId) : undefined;
-  const filter = (req.query.filter !== undefined) ? req.query.filter : undefined;
+  const farmId =
+    req.query.farmId !== undefined ? JSON.parse(req.query.farmId) : undefined;
+  const filter = req.query.filter !== undefined ? req.query.filter : undefined;
 
   const jwt = getJwtFromRequest(req);
   const user = await getUserFromJwt(jwt);
 
   let where = {};
 
-  if(farmId !== undefined) {
+  if (farmId !== undefined) {
     where[Op.and] = [
-      sequelize.where(
-        sequelize.cast(sequelize.col('FarmableLand.id'), 'int'),
-        {
-          [Op.eq]: farmId
-        }
-      ),
+      sequelize.where(sequelize.cast(sequelize.col('FarmableLand.id'), 'int'), {
+        [Op.eq]: farmId,
+      }),
     ];
   }
 
@@ -39,7 +40,7 @@ router.get('/farmableLandCrop', async (req, res) => {
       sequelize.where(
         sequelize.cast(sequelize.col('FarmableLand.UserId'), 'int'),
         {
-          [Op.eq]: user.id
+          [Op.eq]: user.id,
         }
       ),
     ];
@@ -47,13 +48,8 @@ router.get('/farmableLandCrop', async (req, res) => {
 
   const farmsCrops = await FarmableLandCrop.findAll({
     where: where,
-    include: [
-      { model: FarmableLand },
-      { model: Crop },
-    ],
-    order: [
-      ['createdAt', 'DESC'],
-    ],
+    include: [{ model: FarmableLand }, { model: Crop }],
+    order: [['createdAt', 'DESC']],
   });
 
   let farmIds = [];
@@ -65,19 +61,19 @@ router.get('/farmableLandCrop', async (req, res) => {
 
   let farmableLands = [];
   for (const farmableLandId of farmIds) {
-    const farm = (await FarmableLand.findOne({
-      where: {
-        id: farmableLandId
-      }
-    })).toJSON();
+    const farm = (
+      await FarmableLand.findOne({
+        where: {
+          id: farmableLandId,
+        },
+      })
+    ).toJSON();
 
     const fCrops = await FarmableLandCrop.findAll({
       where: {
-        FarmableLandId: farmableLandId
+        FarmableLandId: farmableLandId,
       },
-      include: [
-        { model: Crop }
-      ]
+      include: [{ model: Crop }],
     });
 
     farm.crops = fCrops.map((fCrop) => {
@@ -88,7 +84,7 @@ router.get('/farmableLandCrop', async (req, res) => {
   }
 
   res.status(200).send({
-    lands: farmableLands
+    lands: farmableLands,
   });
 });
 
@@ -99,25 +95,25 @@ router.post('/farmableLandCrop', async (req, res) => {
   try {
     const farm = await FarmableLand.findOne({
       id: req.body.farmId,
-      UserId: user.id
+      UserId: user.id,
     });
 
-    if(farm) {
+    if (farm) {
       const farmableLandCrop = await FarmableLandCrop.create({
         FarmableLandId: req.body.farmId,
-        CropId: req.body.cropId
+        CropId: req.body.cropId,
       });
       res.status(200).send({
-        farmableLandCrop: farmableLandCrop
+        farmableLandCrop: farmableLandCrop,
       });
     } else {
       res.status(404).send({
-        error: 'not farm allowed'
+        error: 'not farm allowed',
       });
     }
   } catch (error) {
     res.status(412).send({
-      error: 'unknow error'
+      error: 'unknow error',
     });
   }
 });
@@ -130,50 +126,50 @@ router.put('/farmableLandCrop/:farmId', async (req, res) => {
     let farm = await FarmableLand.findOne({
       where: {
         id: req.params.farmId,
-        UserId: user.id
-      }
+        UserId: user.id,
+      },
     });
 
-    if(farm) {
+    if (farm) {
       await FarmableLandCrop.destroy({
         where: {
-          FarmableLandId: req.params.farmId
-        }
+          FarmableLandId: req.params.farmId,
+        },
       });
 
       farm = await FarmableLand.findOne({
         where: {
           id: req.body.farmId,
-          UserId: user.id
-        }
+          UserId: user.id,
+        },
       });
 
-      if(farm) {
+      if (farm) {
         const crops = req.body.crops;
 
         for (const crop of crops) {
           await FarmableLandCrop.create({
             FarmableLandId: req.body.farmId,
-            CropId: crop.id
+            CropId: crop.id,
           });
         }
-        req.url = `/farmableLandCrop?id=${req.body.farmId}`
+        req.url = `/farmableLandCrop?id=${req.body.farmId}`;
         req.method = `GET`;
         return router.handle(req, res);
       } else {
         res.status(404).send({
-          error: 'not farm allowed'
+          error: 'not farm allowed',
         });
       }
     } else {
       res.status(404).send({
-        error: 'not farm allowed'
+        error: 'not farm allowed',
       });
     }
   } catch (error) {
     console.log(error);
     res.status(412).send({
-      error: 'unknow error'
+      error: 'unknow error',
     });
   }
 });

@@ -6,9 +6,14 @@ import { withRouter } from 'react-router-dom';
 import Login from './pages/login/Login';
 import Dashboard from './pages/dashboard/Dashboard';
 import {
-  getApi, isLogged, getSessionId, logout,
-  pushNotifications, setI18n, backButtonNative,
-  fetchKeyDataFromLocalStorage
+  getApi,
+  isLogged,
+  getSessionId,
+  logout,
+  pushNotifications,
+  setI18n,
+  backButtonNative,
+  fetchKeyDataFromLocalStorage,
 } from './services/utils';
 
 /* Core CSS required for Ionic components to work properly */
@@ -51,11 +56,11 @@ const App: React.FC = () => {
     if (isLog) {
       try {
         await api.post('/sessionValid', {
-          token: getSessionId()
+          token: getSessionId(),
         });
         setIsLog(true);
         setShowAlert(false);
-      } catch(err) {
+      } catch (err) {
         logout();
         setIsLog(false);
         setShowAlert(true);
@@ -77,24 +82,24 @@ const App: React.FC = () => {
         history.push('/login');
         setShowAlert(false);
       }}
-      cssClass='my-custom-class'
+      cssClass="my-custom-class"
       header={'Session expired'}
       subHeader={'need re-login'}
-      message={'La sesión ha expirado. Por favor, vuelva a iniciar sesión. Gracias.'}
+      message={
+        'La sesión ha expirado. Por favor, vuelva a iniciar sesión. Gracias.'
+      }
       buttons={['OK']}
     />
   ));
 
   return (
     <IonReactRouter>
-      {
-        !isLog
-        &&
+      {!isLog && (
         <div>
           <AlertSession />
           <Redirect to="/login" exact={true} />
         </div>
-      }
+      )}
       <Switch>
         <Route path="/" exact={true}>
           <Redirect to="/login" exact={true} />

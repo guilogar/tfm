@@ -1,17 +1,24 @@
 import {
-  IonContent, IonHeader, IonPage,
-  IonTitle, IonToolbar
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
 } from '@ionic/react';
 import {
-  IonItem, IonLabel, IonInput,
-  IonButton, IonIcon, IonAlert
+  IonItem,
+  IonLabel,
+  IonInput,
+  IonButton,
+  IonIcon,
+  IonAlert,
 } from '@ionic/react';
 import React, { useState } from 'react';
 import { IonGrid, IonRow, IonCol } from '@ionic/react';
 import { personCircle } from 'ionicons/icons';
 import { Redirect } from 'react-router-dom';
 
-import { getApi, login, isLogged } from '../../services/utils';
+import { getApi, login, isLogged, setI18n } from '../../services/utils';
 import { useTranslation } from 'react-i18next';
 
 const Login: React.FC = () => {
@@ -30,11 +37,15 @@ const Login: React.FC = () => {
       const { data } = await api.post('/login', {
         username: username,
         password: password,
-        firebaseToken: (firebaseToken) ? firebaseToken : null
+        firebaseToken: firebaseToken ? firebaseToken : null,
       });
       login(data.token);
+
+      const { data: settingsData } = await getApi().get('/settings');
+      setI18n(settingsData.userSettings?.defaultLanguage);
+
       setIsLog(true);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       setMessage(`Auth failure! Please check your credentials!`);
       setIserror(true);
@@ -43,25 +54,26 @@ const Login: React.FC = () => {
 
   return (
     <IonPage>
-      {
-        isLog
-        &&
-        <Redirect to="/dashboard" push={true} exact={true} />
-      }
+      {isLog && <Redirect to="/dashboard" push={true} exact={true} />}
       <IonHeader>
         <IonToolbar>
           <IonTitle>Login</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen className='ion-padding ion-text-center'>
+      <IonContent fullscreen className="ion-padding ion-text-center">
         <IonGrid>
-          <form className="ion-padding" onSubmit={(event) => { handleSubmit(event) }}>
+          <form
+            className="ion-padding"
+            onSubmit={(event) => {
+              handleSubmit(event);
+            }}
+          >
             <IonRow>
               <IonCol>
                 <IonAlert
                   isOpen={iserror}
                   onDidDismiss={() => setIserror(false)}
-                  cssClass='my-custom-class'
+                  cssClass="my-custom-class"
                   header={'Error!'}
                   message={message}
                   buttons={['Dismiss']}
@@ -79,15 +91,12 @@ const Login: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
-                  <IonLabel position='floating'>
-                    {t('LOGIN_USERNAME')}
-                  </IonLabel>
+                  <IonLabel position="floating">{t('LOGIN_USERNAME')}</IonLabel>
                   <IonInput
-                    type='text'
+                    type="text"
                     value={username}
                     onIonChange={(e) => setUsername(e.detail.value!)}
-                  >
-                  </IonInput>
+                  ></IonInput>
                 </IonItem>
               </IonCol>
             </IonRow>
@@ -95,21 +104,18 @@ const Login: React.FC = () => {
             <IonRow>
               <IonCol>
                 <IonItem>
-                  <IonLabel position='floating'>
-                    {t('LOGIN_PASSWORD')}
-                  </IonLabel>
+                  <IonLabel position="floating">{t('LOGIN_PASSWORD')}</IonLabel>
                   <IonInput
-                    type='password'
+                    type="password"
                     value={password}
                     onIonChange={(e) => setPassword(e.detail.value!)}
-                  >
-                  </IonInput>
+                  ></IonInput>
                 </IonItem>
               </IonCol>
             </IonRow>
             <IonRow>
               <IonCol>
-                <IonButton expand='block' type="submit">
+                <IonButton expand="block" type="submit">
                   Login
                 </IonButton>
               </IonCol>

@@ -1,11 +1,11 @@
 const GENERAL_LANG = {
   SEARCH: 'Buscar',
-  ACTIONS: 'Acciones'
+  ACTIONS: 'Acciones',
 };
 
 const LOGIN_LANG = {
   LOGIN_USERNAME: 'Nombre de usuario',
-  LOGIN_PASSWORD: 'Contraseña'
+  LOGIN_PASSWORD: 'Contraseña',
 };
 
 const HOME_LANG = {
@@ -18,7 +18,8 @@ const HOME_LANG = {
   HOME_NOTIFICATIONS: 'Ver Notificaciones',
   HOME_FARMABLE_LAND_DESCRIPTION: 'Podrás gestionar tus terrenos con comodidad',
   HOME_CROP_DESCRIPTION: 'Podrás gestionar tus cultivos con comodidad',
-  HOME_PHYTOSANITARY_DESCRIPTION: 'Podrás gestionar tus fitosanitarios con comodidad',
+  HOME_PHYTOSANITARY_DESCRIPTION:
+    'Podrás gestionar tus fitosanitarios con comodidad',
   HOME_EVENTS_DESCRIPTION: 'Podrás gestionar tus eventos con comodidad',
   HOME_IRRIGATE_DESCRIPTION: 'Podrás gestionar tus riegos con comodidad',
   HOME_NOTIFICATIONS_DESCRIPTION: 'Podrás ver tus notificaciones con comodidad',
@@ -55,10 +56,11 @@ const FARMABLE_LAND_LANG = {
   FARMABLE_LAND_HAVEIOT: 'Agregar sistema de IOT',
   FARMABLE_LAND_HAVEPHOTO: 'Tengo foto aerea o plano del terreno',
   FARMABLE_LAND_IS_SQUARE: 'El terreno tiene forma de cuadrado o rectángulo',
-  FARMABLE_LAND_SQUARE_MESSAGE: 'Al no ser el terreno rectangular, por favor, dibuje la forma que tiene el mismo (es solo para tener por parte de la administracion una idea de como es el terreno)',
+  FARMABLE_LAND_SQUARE_MESSAGE:
+    'Al no ser el terreno rectangular, por favor, dibuje la forma que tiene el mismo (es solo para tener por parte de la administracion una idea de como es el terreno)',
   FARMABLE_LAND_CREATE: 'Añadir terreno',
   FARMABLE_LAND_EDIT: 'Editar terreno',
-  ...FARMABLE_LAND_TYPES_LANG
+  ...FARMABLE_LAND_TYPES_LANG,
 };
 
 const CROP_LANG = {
@@ -69,7 +71,7 @@ const CROP_LANG = {
   CROP_FARMABLE_LAND: 'Terreno',
   CROP_WEEKS: 'semana(s)',
   CROP_CREATE: 'Crear cultivo',
-  CROP_EDIT: 'Editar cultivo'
+  CROP_EDIT: 'Editar cultivo',
 };
 
 const PHYTOSANITARY_LANG = {
@@ -119,7 +121,7 @@ const EVENTS_LANG = {
   EVENTS_CREATE: 'Añadir evento',
   EVENTS_EDIT: 'Editar evento',
   ...EVENTS_ACTION_TYPES_LANG,
-  ...EVENTS_NAMES_LANG
+  ...EVENTS_NAMES_LANG,
 };
 
 const NOTIFICATION_LANG = {
@@ -128,13 +130,15 @@ const NOTIFICATION_LANG = {
   NOTIFICATION_DESCRIPTION_1: 'El Evento',
   NOTIFICATION_DESCRIPTION_2: 'ha sido disparado con el sensor',
   NOTIFICATION_DESCRIPTION_3: 'y el valor',
-  NOTIFICATION_DESCRIPTION_4: 'Clicke aquí para realizar la acción asociada al evento',
-  NOTIFICATION_DESCRIPTION_5: 'Se ha realizado la accion automatizada. Clicke aquí para mas información',
+  NOTIFICATION_DESCRIPTION_4:
+    'Clicke aquí para realizar la acción asociada al evento',
+  NOTIFICATION_DESCRIPTION_5:
+    'Se ha realizado la accion automatizada. Clicke aquí para mas información',
 };
 
 const SETTING_LANGUAGE_TYPE_LANG = {
   SETTING_LANGUAGE_TYPE_ES: 'Español',
-  SETTING_LANGUAGE_TYPE_EN: 'Inglés'
+  SETTING_LANGUAGE_TYPE_EN: 'Inglés',
 };
 
 const SETTING_LANG = {
@@ -144,7 +148,11 @@ const SETTING_LANG = {
   SETTING_LIGHT_MODE: 'Modo Claro',
   SETTING_LANGUAGE: 'Idioma',
   SETTING_ACTION_BY_DEFAULT: 'Acción por defecto en eventos',
-  ...SETTING_LANGUAGE_TYPE_LANG
+  ...SETTING_LANGUAGE_TYPE_LANG,
+};
+
+const REFRESHER_LANG = {
+  REFRESHER_UPDATE_COMPLETED: 'Actualización completada.',
 };
 
 export default {
@@ -159,4 +167,5 @@ export default {
   ...EVENTS_LANG,
   ...NOTIFICATION_LANG,
   ...SETTING_LANG,
+  ...REFRESHER_LANG,
 };
