@@ -17,6 +17,11 @@ const {
   createPhytosanitary,
 } = require('../routes/services/create-phytosanitary');
 const { pNames } = require('./phytosanitaryNames');
+const { randomNumberFixed } = require('../utils/random-number');
+const { createCropFarm } = require('../routes/services/create-crop-farm');
+const {
+  createPhytosanitaryCrop,
+} = require('../routes/services/create-phytosanitary-farm');
 
 // Re-build all tables
 async function rebuildTables() {
@@ -47,11 +52,17 @@ async function insertDataTable() {
     await createSensor(user.id, Math.random() > 0.5 ? farm1.id : farm2.id);
   }
 
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 365; i++) {
+    const today = new Date();
+    const targetDay = new Date();
+    targetDay.setDate(today.getDate() - i);
+
     await createIrrigate(
-      Math.random() * 30,
-      parseInt(Math.random() * 60),
-      Math.random() > 0.5 ? farm1.id : farm2.id
+      randomNumberFixed(0, 30, 2),
+      parseInt(randomNumberFixed(0, 60, 0)),
+      Math.random() > 0.5 ? farm1.id : farm2.id,
+      targetDay,
+      targetDay
     );
   }
 
@@ -88,42 +99,107 @@ async function insertDataTable() {
     await createNotification(title, body, user.id);
   }
 
-  await createCrop(
-    'PEA',
-    'El cultivo del guisante al exterior',
-    'Guisantes',
-    8
+  let crops = [];
+  crops.push(
+    await createCrop(
+      'PEA',
+      'El cultivo del guisante al exterior',
+      'Guisantes',
+      8
+    )
   );
-  await createCrop('BEAN', 'El cultivo del frijol al exterior', 'Frijol', 8);
-  await createCrop('POTAT0', 'El cultivo de la papa al exterior', 'Patata', 10);
-  await createCrop(
-    'TOMATO',
-    'El cultivo del tomate al invernadero',
-    'Tomate',
-    11
+  crops.push(
+    await createCrop('BEAN', 'El cultivo del frijol al exterior', 'Frijol', 8)
   );
-  await createCrop('MELON', 'El cultivo del melón al invernadero', 'Melon', 12);
-  await createCrop(
-    'WATERMELON',
-    'El cultivo de la sandía invernadero',
-    'Sandía',
-    12
+  crops.push(
+    await createCrop(
+      'POTAT0',
+      'El cultivo de la papa al exterior',
+      'Patata',
+      10
+    )
   );
-  await createCrop(
-    'WATERMELON',
-    'El cultivo de la sandía al exterior',
-    'Sandía americana',
-    12
+  crops.push(
+    await createCrop(
+      'TOMATO',
+      'El cultivo del tomate al invernadero',
+      'Tomate',
+      11
+    )
+  );
+  crops.push(
+    await createCrop(
+      'MELON',
+      'El cultivo del melón al invernadero',
+      'Melon',
+      12
+    )
+  );
+  crops.push(
+    await createCrop(
+      'WATERMELON',
+      'El cultivo de la sandía invernadero',
+      'Sandía',
+      12
+    )
+  );
+  crops.push(
+    await createCrop(
+      'WATERMELON',
+      'El cultivo de la sandía al exterior',
+      'Sandía americana',
+      12
+    )
   );
 
-  await createPhytosanitary(
-    'SYNTETIC_FERTILIZER',
-    'Abono sintetico',
-    'Abono sintetico'
+  for (const crop of crops) {
+    await createCropFarm(Math.random() > 0.5 ? farm1.id : farm2.id, crop.id);
+  }
+
+  let phytosanitaries = [];
+  phytosanitaries.push(
+    await createPhytosanitary(
+      'SYNTETIC_FERTILIZER',
+      'Abono sintetico',
+      'Abono sintetico',
+      randomNumberFixed(0, 100, 2)
+    )
   );
-  await createPhytosanitary('POTASH', 'Potasa', 'Potasa');
+  phytosanitaries.push(
+    await createPhytosanitary(
+      'POTASH',
+      'Potasa',
+      'Potasa',
+      randomNumberFixed(0, 100, 2)
+    )
+  );
   for (const pName of pNames) {
-    await createPhytosanitary(pName, pName.toLowerCase(), pName.toLowerCase());
+    phytosanitaries.push(
+      await createPhytosanitary(
+        pName,
+        pName.toLowerCase(),
+        pName.toLowerCase(),
+        randomNumberFixed(0, 100, 2)
+      )
+    );
+  }
+
+  for (let i = 0; i < 12; i++) {
+    const today = new Date();
+    const targetMonth = new Date();
+    targetMonth.setMonth(today.getMonth() - i);
+
+    for (const phytosanitary of phytosanitaries) {
+      const randomNumber = randomNumberFixed(0, crops.length - 1, 0);
+      const crop = crops[randomNumber];
+      await createPhytosanitaryCrop(
+        phytosanitary.id,
+        crop.id,
+        Math.random() > 0.5 ? farm1.id : farm2.id,
+        targetMonth,
+        targetMonth
+      );
+    }
   }
 }
 
