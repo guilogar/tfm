@@ -13,7 +13,11 @@
     "start:emulator": "npm run start --prefix ./emulator",
     "start": "run-p start:backend start:frontend",
     "backend:makeNewData": "npm run makeNewData --prefix ./backend",
-    "backend:makeNewDataProduction": "npm run makeNewDataProduction --prefix ./backend"
+    "backend:makeNewDataProduction": "npm run makeNewDataProduction --prefix ./backend",
+    "remove:frontend:dependencies": "rm -rf frontend/package-lock.json frontend/node_modules",
+    "remove:backend:dependencies": "rm -rf backend/package-lock.json backend/node_modules",
+    "remove:emulator:dependencies": "rm -rf emulator/package-lock.json emulator/node_modules",
+    "remove:all:dependencies": "run-p remove:frontend:dependencies remove:backend:dependencies remove:emulator:dependencies"
   },
   "repository": {
     "type": "git",

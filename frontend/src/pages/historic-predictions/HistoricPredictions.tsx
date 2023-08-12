@@ -47,7 +47,7 @@ const HistoricPreditions: React.FC = () => {
         <IonList>
           <IonItem
             className={''}
-            routerLink={'/dashboard/page/HistoricPredictions/Irrigates'}
+            routerLink={'/dashboard/page/HistoricPredictions/IRRIGATES'}
             routerDirection="none"
             lines="none"
             detail={false}
@@ -57,7 +57,7 @@ const HistoricPreditions: React.FC = () => {
           </IonItem>
           <IonItem
             className={''}
-            routerLink={'/dashboard/page/HistoricPredictions/Phytosanitaries'}
+            routerLink={'/dashboard/page/HistoricPredictions/PHYTOSANITARIES'}
             routerDirection="none"
             lines="none"
             detail={false}
