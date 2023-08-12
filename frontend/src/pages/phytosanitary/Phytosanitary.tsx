@@ -1,8 +1,19 @@
 import {
-  IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-  IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle,
-  IonCardContent, IonItem, IonIcon, IonLabel, IonButton,
-  IonImg, IonButtons, IonMenuButton, IonList, IonListHeader
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonCard,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCardContent,
+  IonItem,
+  IonIcon,
+  IonLabel,
+  IonButton,
+  IonList,
+  IonListHeader,
+  useIonLoading,
 } from '@ionic/react';
 import { add, create as createIcon, trash } from 'ionicons/icons';
 import React, { useState, useEffect } from 'react';
@@ -25,17 +36,23 @@ const Phytosanitary: React.FC = () => {
 
   const [searchText, setSearchText] = useState<string | null>(null);
 
+  const [present, dismiss] = useIonLoading();
+
   useEffect(() => {
     (async () => {
+      present({
+        message: t('WAIT'),
+      });
       const farms = await getFarms();
       setFarms(farms);
+      dismiss();
     })();
   }, []);
 
   const getFarms = async () => {
     const { data } = await api.get('/cropPhytosanitary');
     return data.lands;
-  }
+  };
 
   const filterData = async (text: string) => {
     if (!text) {
@@ -43,11 +60,15 @@ const Phytosanitary: React.FC = () => {
     }
     const { data } = await api.get(`/cropPhytosanitary?filter=${text}`);
     return data.lands;
-  }
+  };
 
   const CreateButton = () => {
     return (
-      <IonButton onClick={() => { setCreate(true) }}>
+      <IonButton
+        onClick={() => {
+          setCreate(true);
+        }}
+      >
         <IonIcon slot="icon-only" icon={add} />
       </IonButton>
     );
@@ -55,101 +76,112 @@ const Phytosanitary: React.FC = () => {
 
   return (
     <IonPage>
-      {
-        create
-        &&
-        <Redirect to="/dashboard/page/Phytosanitary/create" push={true} exact={true} />
-      }
-      {
-        update
-        &&
-        <Redirect to={`/dashboard/page/Phytosanitary/${farmId}/${cropId}/update`} push={true} exact={true} />
-      }
+      {create && (
+        <Redirect
+          to="/dashboard/page/Phytosanitary/create"
+          push={true}
+          exact={true}
+        />
+      )}
+      {update && (
+        <Redirect
+          to={`/dashboard/page/Phytosanitary/${farmId}/${cropId}/update`}
+          push={true}
+          exact={true}
+        />
+      )}
       <IonHeader>
         <ToolBar
           title={t('PHYTOSANITARY_LIST')}
           writeAction={async (text: string) => {
-            const farms: Array<any> = await filterData(text)
-            setFarms(farms)
-            setSearchText(text)
+            present({
+              message: t('WAIT'),
+            });
+            const farms: Array<any> = await filterData(text);
+            setFarms(farms);
+            setSearchText(text);
+            dismiss();
           }}
           cancelAction={async () => {
-            const farms: Array<any> = await getFarms()
-            setFarms(farms)
-            setSearchText(null)
+            present({
+              message: t('WAIT'),
+            });
+            const farms: Array<any> = await getFarms();
+            setFarms(farms);
+            setSearchText(null);
+            dismiss();
           }}
           CreateButton={CreateButton}
-          />
+        />
       </IonHeader>
       <IonContent>
-        <Refresher refreshAction={async () => {
-          const farms = (searchText) ? await filterData(searchText) : await getFarms()
-          setFarms(farms)
-        }} />
-        {
-          farms.map((farm, index) => {
-            return (
-              <IonCard key={index}>
-                <IonCardHeader>
-                  <IonCardTitle>
-                    {farm.name}
-                  </IonCardTitle>
-                  <IonCardSubtitle>
-                    {farm.crops.length} {t('CROP_LENGTH')}
-                  </IonCardSubtitle>
-                </IonCardHeader>
-                <IonCardContent>
-                  {
-                    farm.crops.map((crop: any, index: number) => {
-                      return (
-                        <IonCard key={index}>
-                          <IonCardHeader>
-                            <IonCardTitle>
-                              {crop.alias}
-                            </IonCardTitle>
-                            <IonCardSubtitle>
-                              {crop.phytosanitarys.length} {t('PHYTOSANITARY_LENGTH')}
-                            </IonCardSubtitle>
-                          </IonCardHeader>
-                          <IonCardContent>
-                            <IonList>
-                              <IonListHeader>
-                                {t('PHYTOSANITARY_NAME_PLURAL')}:
-                              </IonListHeader>
-                              {
-                                crop.phytosanitarys.map((phytosanitary: any, index: any) => {
-                                  return (
-                                    <IonItem key={index}>
-                                      {phytosanitary.alias}: {phytosanitary.description}
-                                    </IonItem>
-                                  );
-                                })
-                              }
-                            </IonList>
-                            <IonItem>
-                              <IonLabel>
-                                {t('ACTIONS')}
-                              </IonLabel>
-                              <IonButton
-                                fill="outline" slot="end"
-                                onClick={() => {
-                                  setFarmId(farm.id)
-                                  setCropId(crop.id)
-                                  setUpdate(true)
-                                }}>
-                                  <IonIcon icon={createIcon} />
-                              </IonButton>
-                            </IonItem>
-                          </IonCardContent>
-                        </IonCard>
-                      );
-                    })
-                  }
-                </IonCardContent>
-              </IonCard>
-            );
-          })
-        }
+        <Refresher
+          refreshAction={async () => {
+            const farms = searchText
+              ? await filterData(searchText)
+              : await getFarms();
+            setFarms(farms);
+          }}
+        />
+        {farms.map((farm, index) => {
+          return (
+            <IonCard key={index}>
+              <IonCardHeader>
+                <IonCardTitle>{farm.name}</IonCardTitle>
+                <IonCardSubtitle>
+                  {farm.crops.length} {t('CROP_LENGTH')}
+                </IonCardSubtitle>
+              </IonCardHeader>
+              <IonCardContent>
+                {farm.crops.map((crop: any, index: number) => {
+                  return (
+                    <IonCard key={index}>
+                      <IonCardHeader>
+                        <IonCardTitle>{crop.alias}</IonCardTitle>
+                        <IonCardSubtitle>
+                          {crop.phytosanitarys.length}{' '}
+                          {t('PHYTOSANITARY_LENGTH')}
+                        </IonCardSubtitle>
+                      </IonCardHeader>
+                      <IonCardContent>
+                        <IonList>
+                          <IonListHeader>
+                            {t('PHYTOSANITARY_NAME_PLURAL')}:
+                          </IonListHeader>
+                          {crop.phytosanitarys.map(
+                            (phytosanitary: any, index: any) => {
+                              return (
+                                <IonItem key={index}>
+                                  {phytosanitary.alias}:{' '}
+                                  {phytosanitary.description} (
+                                  {phytosanitary.price} €)
+                                </IonItem>
+                              );
+                            }
+                          )}
+                        </IonList>
+                        <IonItem>
+                          <IonLabel>{t('ACTIONS')}</IonLabel>
+                          <IonButton
+                            fill="outline"
+                            slot="end"
+                            onClick={() => {
+                              setFarmId(farm.id);
+                              setCropId(crop.id);
+                              setUpdate(true);
+                            }}
+                          >
+                            <IonIcon icon={createIcon} />
+                          </IonButton>
+                        </IonItem>
+                      </IonCardContent>
+                    </IonCard>
+                  );
+                })}
+              </IonCardContent>
+            </IonCard>
+          );
+        })}
       </IonContent>
     </IonPage>
   );

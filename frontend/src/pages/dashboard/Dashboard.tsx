@@ -1,14 +1,14 @@
-import {
-  IonApp, IonRouterOutlet, IonSplitPane
-} from '@ionic/react';
+import { IonApp, IonRouterOutlet, IonSplitPane } from '@ionic/react';
 
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 
 import {
-  isLogged, getWindowDimensions,
-  getApi, setI18n
+  isLogged,
+  getWindowDimensions,
+  getApi,
+  setI18n,
 } from '../../services/utils';
 import Menu from '../../components/Menu';
 import Home from '../home/Home';
@@ -20,6 +20,7 @@ import CropRoute from '../routes/crop-routes';
 import EventsRoute from '../routes/event-routes';
 import PhytosanitaryRoute from '../routes/phytosanitary-routes';
 import IrrigateRoute from '../routes/irrigate-routes';
+import HistoricPredictionsRoute from '../routes/historic-predictions-routes';
 
 const localSettings = localStorage.getItem('localSettings');
 if (!localSettings) {
@@ -27,7 +28,7 @@ if (!localSettings) {
     const api = getApi();
     const { data } = await api.get('/settings');
     if (data.userSettings?.backgroundColor === 'DARK') {
-      document.body.classList.add("dark");
+      document.body.classList.add('dark');
     }
     setI18n(data.userSettings?.defaultLanguage);
   })();
@@ -36,10 +37,10 @@ if (!localSettings) {
 const Dashboard: React.FC = () => {
   const api = getApi();
   const [isLog, setIsLog] = useState(isLogged());
-  const [ fullname, setFullname ] = useState<string | null>(null);
+  const [fullname, setFullname] = useState<string | null>(null);
 
   const dimensions = getWindowDimensions();
-  const [ width, setWidth ] = useState<number>(dimensions.width);
+  const [width, setWidth] = useState<number>(dimensions.width);
 
   window.addEventListener('resize', () => {
     const dimensions = getWindowDimensions();
@@ -55,27 +56,25 @@ const Dashboard: React.FC = () => {
 
   return (
     <IonApp>
-      {
-        !isLog
-        &&
-        <Redirect to="/login" push={true} exact={true} />
-      }
-      {
-        (width < 1024)
-        &&
-        <Redirect to="/dashboard" exact={true} />
-      }
+      {!isLog && <Redirect to="/login" push={true} exact={true} />}
+      {width < 1024 && <Redirect to="/dashboard" exact={true} />}
       <IonReactRouter>
         <IonSplitPane contentId="main">
-          <Menu setIsLog={setIsLog} reduceFormat={width < 1024} fullname={`${fullname}`} />
+          <Menu
+            setIsLog={setIsLog}
+            reduceFormat={width < 1024}
+            fullname={`${fullname}`}
+          />
           <IonRouterOutlet id="main">
             <Switch>
               <Route path="/dashboard" exact={true}>
-                {
-                  (width < 1024)
-                  &&
-                  <Redirect to="/dashboard/page/Home" push={true} exact={true} />
-                }
+                {width < 1024 && (
+                  <Redirect
+                    to="/dashboard/page/Home"
+                    push={true}
+                    exact={true}
+                  />
+                )}
               </Route>
               <Route path="/dashboard/page/Home" exact={true}>
                 <Home />
@@ -85,6 +84,7 @@ const Dashboard: React.FC = () => {
               {EventsRoute}
               {PhytosanitaryRoute}
               {IrrigateRoute}
+              {HistoricPredictionsRoute}
               <Route path="/dashboard/page/Notification" exact={true}>
                 <Notification />
               </Route>
