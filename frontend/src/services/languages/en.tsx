@@ -1,6 +1,7 @@
 const GENERAL_LANG = {
   SEARCH: 'Search',
   ACTIONS: 'Actions',
+  WAIT: 'Your information is loading. Please, wait...',
 };
 
 const LOGIN_LANG = {
@@ -37,6 +38,7 @@ const MENU_LANG = {
   NOTIFICATIONS: 'Notifications',
   SETTINGS: 'Settings',
   CLOSE_SESSION: 'Close session',
+  HISTORIC_AND_PREDICTIONS: 'Historical and predictions',
 };
 
 const FARMABLE_LAND_TYPES_LANG = {
@@ -124,6 +126,10 @@ const EVENTS_LANG = {
   ...EVENTS_NAMES_LANG,
 };
 
+const HISTORIC_PREDICTIONS = {
+  HISTORIC_PREDICTIONS_LIST: 'Histórico y predicciones',
+};
+
 const NOTIFICATION_LANG = {
   NOTIFICATION_LIST: 'Notifications',
   NOTIFICATION_EVENT: 'Event',
@@ -165,6 +171,7 @@ export default {
   ...PHYTOSANITARY_LANG,
   ...IRRIGATE_LANG,
   ...EVENTS_LANG,
+  ...HISTORIC_PREDICTIONS,
   ...NOTIFICATION_LANG,
   ...SETTING_LANG,
   ...REFRESHER_LANG,

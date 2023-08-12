@@ -2,8 +2,6 @@ import {
   IonContent,
   IonHeader,
   IonPage,
-  IonTitle,
-  IonToolbar,
   IonCard,
   IonCardHeader,
   IonCardSubtitle,
@@ -13,10 +11,8 @@ import {
   IonIcon,
   IonLabel,
   IonButton,
-  IonImg,
-  IonButtons,
-  IonMenuButton,
   IonInput,
+  useIonLoading,
 } from '@ionic/react';
 import { add, create as createIcon, trash } from 'ionicons/icons';
 import React, { useState, useEffect } from 'react';
@@ -39,10 +35,16 @@ const Irrigate: React.FC = () => {
 
   const [searchText, setSearchText] = useState<string | null>(null);
 
+  const [present, dismiss] = useIonLoading();
+
   useEffect(() => {
     (async () => {
+      present({
+        message: t('WAIT'),
+      });
       const irrigates = await getIrrigates();
       setIrrigates(irrigates);
+      dismiss();
     })();
   }, []);
 
@@ -95,9 +97,13 @@ const Irrigate: React.FC = () => {
         <ToolBar
           title={t('IRRIGATE_LIST')}
           writeAction={async (text: string) => {
+            present({
+              message: t('WAIT'),
+            });
             const irrigates: Array<any> = await filterData(text);
             setIrrigates(irrigates);
             setSearchText(text);
+            dismiss();
           }}
           cancelAction={async () => {
             const irrigates: Array<any> = await getIrrigates();
@@ -110,10 +116,14 @@ const Irrigate: React.FC = () => {
       <IonContent>
         <Refresher
           refreshAction={async () => {
+            present({
+              message: t('WAIT'),
+            });
             const irrigates = searchText
               ? await filterData(searchText)
               : await getIrrigates();
             setIrrigates(irrigates);
+            dismiss();
           }}
         />
         {irrigates.map((irrigate, index) => {

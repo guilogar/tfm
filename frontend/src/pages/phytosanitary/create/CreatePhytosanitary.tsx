@@ -1,8 +1,23 @@
 import {
-  IonContent, IonHeader, IonPage, IonTitle, IonToolbar,
-  IonCard, IonCardHeader, IonCardSubtitle, IonCardTitle,
-  IonCardContent, IonItem, IonIcon, IonLabel, IonButton,
-  IonImg, IonButtons, IonMenuButton, IonSelect, IonSelectOption
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonCard,
+  IonCardHeader,
+  IonCardSubtitle,
+  IonCardTitle,
+  IonCardContent,
+  IonItem,
+  IonIcon,
+  IonLabel,
+  IonButton,
+  IonImg,
+  IonButtons,
+  IonMenuButton,
+  IonSelect,
+  IonSelectOption,
 } from '@ionic/react';
 import { arrowBack, arrowBackCircle } from 'ionicons/icons';
 import React, { useState, useEffect } from 'react';
@@ -21,7 +36,8 @@ const CreatePhytosanitary: React.FC = () => {
   const [phytosanitarys, setPhytosanitarys] = useState<Array<any>>([]);
   const [farmRef, setFarmRef] = useState<HTMLIonSelectElement | null>(null);
   const [cropRef, setCropRef] = useState<HTMLIonSelectElement | null>(null);
-  const [phytosanitaryRef, setPhytosanitaryRef] = useState<HTMLIonSelectElement | null>(null);
+  const [phytosanitaryRef, setPhytosanitaryRef] =
+    useState<HTMLIonSelectElement | null>(null);
 
   const [farmableLandId, setFarmableLandId] = useState<any | null>(null);
 
@@ -42,26 +58,26 @@ const CreatePhytosanitary: React.FC = () => {
       await api.post('/cropPhytosanitary', {
         farmId: farmRef?.value,
         cropId: cropRef?.value,
-        phytosanitaryId: phytosanitaryRef?.value
+        phytosanitaryId: phytosanitaryRef?.value,
       });
       setBack(true);
-    } catch(err) {
+    } catch (err) {
       console.log(err);
     }
   };
 
   return (
     <IonPage>
-      {
-        back
-        &&
-        <Redirect to="/dashboard/page/Phytosanitary" exact={true} />
-      }
+      {back && <Redirect to="/dashboard/page/Phytosanitary" exact={true} />}
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="start">
             <IonMenuButton />
-            <IonButton onClick={() => { setBack(true) }}>
+            <IonButton
+              onClick={() => {
+                setBack(true);
+              }}
+            >
               <IonIcon slot="icon-only" ios={arrowBackCircle} md={arrowBack} />
             </IonButton>
           </IonButtons>
@@ -69,50 +85,57 @@ const CreatePhytosanitary: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <form className="ion-padding" onSubmit={(event) => { handleSubmit(event) }}>
+        <form
+          className="ion-padding"
+          onSubmit={(event) => {
+            handleSubmit(event);
+          }}
+        >
           <IonItem>
-            <IonLabel position="floating">
-              {t('CROP_FARMABLE_LAND')}
-            </IonLabel>
+            <IonLabel position="floating">{t('CROP_FARMABLE_LAND')}</IonLabel>
             <IonSelect
-              ref={(farmRef) => { setFarmRef(farmRef) }}
-              name="farm" aria-required="true" onClick={() => {
+              ref={(farmRef) => {
+                setFarmRef(farmRef);
+              }}
+              name="farm"
+              aria-required="true"
+              onClick={() => {
                 cropRef?.setAttribute('value', '');
                 setCrops([]);
               }}
             >
-              {
-                farms.map((farm, index) => {
-                  return (
-                    <IonSelectOption value={farm.id} key={index}>
-                      {farm.name}
-                    </IonSelectOption>
-                  );
-                })
-              }
+              {farms.map((farm, index) => {
+                return (
+                  <IonSelectOption value={farm.id} key={index}>
+                    {farm.name}
+                  </IonSelectOption>
+                );
+              })}
             </IonSelect>
           </IonItem>
           <IonItem>
-            <IonLabel position="floating">
-            {t('CROP_NAME_SINGULAR')}
-            </IonLabel>
+            <IonLabel position="floating">{t('CROP_NAME_SINGULAR')}</IonLabel>
             <IonSelect
-              ref={(cropRef) => { setCropRef(cropRef) }}
-              name="crop" aria-required="true" onClick={async () => {
-                const farmId = farmRef?.value
-                const { data } = await api.get(`/farmableLandCrop?farmId=${farmId}`)
+              ref={(cropRef) => {
+                setCropRef(cropRef);
+              }}
+              name="crop"
+              aria-required="true"
+              onClick={async () => {
+                const farmId = farmRef?.value;
+                const { data } = await api.get(
+                  `/farmableLandCrop?farmId=${farmId}`
+                );
                 setCrops(data.lands[0].crops);
               }}
             >
-              {
-                crops.map((crop, index) => {
-                  return (
-                    <IonSelectOption value={crop.id} key={index}>
-                      {crop.alias}
-                    </IonSelectOption>
-                  );
-                })
-              }
+              {crops.map((crop, index) => {
+                return (
+                  <IonSelectOption value={crop.id} key={index}>
+                    {crop.alias}
+                  </IonSelectOption>
+                );
+              })}
             </IonSelect>
           </IonItem>
           <IonItem>
@@ -120,18 +143,19 @@ const CreatePhytosanitary: React.FC = () => {
               {t('PHYTOSANITARY_NAME_SINGULAR')}
             </IonLabel>
             <IonSelect
-              ref={(phytosanitaryRef) => { setPhytosanitaryRef(phytosanitaryRef) }}
-              name="phytosanitary" aria-required="true"
+              ref={(phytosanitaryRef) => {
+                setPhytosanitaryRef(phytosanitaryRef);
+              }}
+              name="phytosanitary"
+              aria-required="true"
             >
-              {
-                phytosanitarys.map((phytosanitary, index) => {
-                  return (
-                    <IonSelectOption value={phytosanitary.id} key={index}>
-                      {phytosanitary.alias}
-                    </IonSelectOption>
-                  );
-                })
-              }
+              {phytosanitarys.map((phytosanitary, index) => {
+                return (
+                  <IonSelectOption value={phytosanitary.id} key={index}>
+                    {phytosanitary.alias} ({phytosanitary.price} €)
+                  </IonSelectOption>
+                );
+              })}
             </IonSelect>
           </IonItem>
           <IonButton className="ion-margin-top" type="submit" expand="block">
