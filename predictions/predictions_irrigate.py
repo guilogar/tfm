@@ -1,4 +1,5 @@
 import pandas
+import sys
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -12,6 +13,7 @@ from models.irrigate_predictions import IrrigatePredictions
 
 from utils.get_arguments import get_arguments
 from utils.get_session_engine import get_session_engine
+from constants.constants import MIN_SCORE_ESTIMATOR
 
 arguments = get_arguments()
 
@@ -66,6 +68,17 @@ neural_estimator = Pipeline(
     ]
 )
 neural_estimator.fit(X_train, y_train)
+neural_estimator_score = neural_estimator.score(X_test, y_test)
+
+print(
+    'The Score of the neural estimator is =>',
+    neural_estimator_score
+)
+
+if neural_estimator_score < MIN_SCORE_ESTIMATOR:
+    sys.exit(
+        "The score of estimaor is under " + MIN_SCORE_ESTIMATOR + ". Aborting!"
+    )
 
 estimators = [
     {'name': 'neural', 'pipeline_estimator': neural_estimator}
