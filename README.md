@@ -138,3 +138,23 @@ ionic build
 ionic capacitor build android
 ionic capacitor run android
 ```
+
+## Do Predictions
+
+[Install miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+```
+conda env create -f predictions/environment.yml
+```
+
+```
+conda activate tfm
+```
+
+```
+pip install "sqlalchemy>=2.0.0" "psycopg2-binary"
+```
+
+```
+npm run backend:doPredictions
+```
