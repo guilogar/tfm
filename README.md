@@ -2,17 +2,6 @@
 
 Repository for make final master project
 
-## To Create and Compile new Stream Analytic Job's (Optional)
-
-```
-Install dotnet:
-https://dotnet.microsoft.com/download/dotnet/thank-you/sdk-3.1.408-windows-x64-installer
-https://dotnet.microsoft.com/download/dotnet/3.0/runtime/?utm_source=getdotnetcore&utm_medium=referral
-
-See this guide:
-https://docs.microsoft.com/en-us/azure/stream-analytics/quick-create-visual-studio-code
-```
-
 ## Create a .env for environment variables
 
 ### backend/.env
@@ -148,13 +137,4 @@ cd frontend
 ionic build
 ionic capacitor build android
 ionic capacitor run android
-```
-
-## Compile docs with vscode and docker
-
-```
-docker pull feverch/texlive:2018
-code --install-extension james-yu.latex-workshop
-add 'tfg/documentation' path to sharing folder to docker
-open main.text, pulse compile and enjoy
 ```

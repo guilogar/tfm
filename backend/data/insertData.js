@@ -22,6 +22,7 @@ const { createCropFarm } = require('../routes/services/create-crop-farm');
 const {
   createPhytosanitaryCrop,
 } = require('../routes/services/create-phytosanitary-farm');
+const { SUMMER_MONTHS } = require('../routes/constants/constants');
 
 // Re-build all tables
 async function rebuildTables() {
@@ -57,10 +58,28 @@ async function insertDataTable() {
     const targetDay = new Date();
     targetDay.setDate(today.getDate() - i);
 
+    let minWater = 0;
+    let maxWater = 5;
+
+    const summerMonths = SUMMER_MONTHS.map((month) => month.value);
+
+    if (summerMonths.includes(targetDay.getMonth())) {
+      minWater = 10;
+      maxWater = 15;
+    }
+
+    const lengthMinutes = parseInt(randomNumberFixed(50, 60, 0));
     await createIrrigate(
-      randomNumberFixed(0, 30, 2),
-      parseInt(randomNumberFixed(0, 60, 0)),
-      Math.random() > 0.5 ? farm1.id : farm2.id,
+      lengthMinutes * randomNumberFixed(minWater, maxWater, 2),
+      lengthMinutes,
+      farm1.id,
+      targetDay,
+      targetDay
+    );
+    await createIrrigate(
+      lengthMinutes * randomNumberFixed(minWater, maxWater, 2),
+      lengthMinutes,
+      farm2.id,
       targetDay,
       targetDay
     );
