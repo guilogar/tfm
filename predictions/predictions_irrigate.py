@@ -84,8 +84,10 @@ estimators = [
     {'name': 'neural', 'pipeline_estimator': neural_estimator}
 ]
 
+weeks = arguments["--weeks"].split(",")
+
 for estimator in estimators:
-    for week in range(1, 52):
+    for week in weeks:
         lengthMinutes = arguments["--lengthMinutes"]
         farmableLandId = arguments["--farmId"]
         predictX = pandas.DataFrame(

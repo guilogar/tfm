@@ -6,6 +6,7 @@ def get_arguments():
         "--lengthMinutes": "",
         "--farmId": "",
         "--year": "",
+        "--weeks": "",
         "--user": "",
         "--password": "",
         "--host": "",
