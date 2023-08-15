@@ -77,7 +77,8 @@ print(
 
 if neural_estimator_score < MIN_SCORE_ESTIMATOR:
     sys.exit(
-        "The score of estimaor is under " + MIN_SCORE_ESTIMATOR + ". Aborting!"
+        "The score of estimator is under " +
+        str(MIN_SCORE_ESTIMATOR) + ". Aborting!"
     )
 
 estimators = [
