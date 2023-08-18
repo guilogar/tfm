@@ -7,12 +7,8 @@ class IrrigatePredictions extends Model {}
 
 IrrigatePredictions.init(
   {
-    year: {
-      type: DataTypes.BIGINT,
-      primaryKey: true,
-    },
-    week: {
-      type: DataTypes.BIGINT,
+    date: {
+      type: DataTypes.DATE,
       primaryKey: true,
     },
     FarmableLandId: {

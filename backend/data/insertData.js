@@ -22,7 +22,11 @@ const { createCropFarm } = require('../routes/services/create-crop-farm');
 const {
   createPhytosanitaryCrop,
 } = require('../routes/services/create-phytosanitary-farm');
-const { SUMMER_MONTHS } = require('../routes/constants/constants');
+const {
+  SUMMER_MONTHS,
+  YEARS_TO_IRRIGATE,
+  DAYS_PER_YEAR,
+} = require('../routes/constants/constants');
 
 // Re-build all tables
 async function rebuildTables() {
@@ -53,7 +57,7 @@ async function insertDataTable() {
     await createSensor(user.id, Math.random() > 0.5 ? farm1.id : farm2.id);
   }
 
-  for (let i = 0; i < 365; i++) {
+  for (let i = 0; i < YEARS_TO_IRRIGATE * DAYS_PER_YEAR; i++) {
     const today = new Date();
     const targetDay = new Date();
     targetDay.setDate(today.getDate() - i);

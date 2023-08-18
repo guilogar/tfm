@@ -5,8 +5,7 @@ def get_arguments():
     arguments = {
         "--lengthMinutes": "",
         "--farmId": "",
-        "--year": "",
-        "--weeks": "",
+        "--days": "",
         "--user": "",
         "--password": "",
         "--host": "",

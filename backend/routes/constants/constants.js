@@ -17,6 +17,11 @@ const SUMMER_MONTHS = [
   },
 ];
 
+const DAYS_PER_YEAR = 365;
+const YEARS_TO_IRRIGATE = 3;
+
 module.exports = {
   SUMMER_MONTHS,
+  DAYS_PER_YEAR,
+  YEARS_TO_IRRIGATE,
 };

@@ -1,5 +1,6 @@
 import pandas
 import sys
+import datetime
 
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
@@ -32,7 +33,9 @@ for irrigate in irrigates:
     dataX.append(
         [
             irrigate.lengthMinutes,
-            irrigate.createdAt.isocalendar().week,
+            irrigate.createdAt.year,
+            irrigate.createdAt.month,
+            irrigate.createdAt.day,
             irrigate.FarmableLandId
         ]
     )
@@ -43,7 +46,7 @@ for irrigate in irrigates:
 X = pandas.DataFrame(
     dataX,
     columns=[
-        'lengthMinutes', 'numberWeek', 'FarmableLandId'
+        'lengthMinutes', 'year', 'month', 'day', 'FarmableLandId'
     ]
 )
 
@@ -85,20 +88,28 @@ estimators = [
     {'name': 'neural', 'pipeline_estimator': neural_estimator}
 ]
 
-weeks = arguments["--weeks"].split(",")
+days = int(arguments["--days"])
 
 for estimator in estimators:
-    for week in weeks:
+    for day in range(1, days + 1):
         lengthMinutes = arguments["--lengthMinutes"]
         farmableLandId = arguments["--farmId"]
+
+        today = datetime.date.today()
+        targetDate = today + datetime.timedelta(days=day)
+
         predictX = pandas.DataFrame(
             [
                 [
-                    lengthMinutes, week, farmableLandId
+                    lengthMinutes,
+                    targetDate.year,
+                    targetDate.month,
+                    targetDate.day,
+                    farmableLandId
                 ]
             ],
             columns=[
-                'lengthMinutes', 'numberWeek', 'FarmableLandId'
+                'lengthMinutes', 'year', 'month', 'day', 'FarmableLandId'
             ]
         )
         prediction = estimator['pipeline_estimator'].predict(
@@ -106,8 +117,7 @@ for estimator in estimators:
         )
 
         irrigatePrediction = IrrigatePredictions(
-            year=arguments["--year"],
-            week=week,
+            date=targetDate,
             lengthMinutes=lengthMinutes,
             amountWater=round(prediction[0], 2),
             FarmableLandId=farmableLandId
