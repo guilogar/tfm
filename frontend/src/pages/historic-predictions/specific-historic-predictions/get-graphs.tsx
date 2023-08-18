@@ -1,4 +1,4 @@
-import { XYPlot, LineSeries, VerticalBarSeries } from 'react-vis';
+import { XYPlot, LineSeries } from 'react-vis';
 
 interface iGraph {
   IRRIGATES: Function;
@@ -14,10 +14,6 @@ export const GRAPHS: iGraph = {
     );
   },
   PHYTOSANITARIES: (data = []) => {
-    return (
-      <XYPlot height={300} width={300}>
-        <VerticalBarSeries data={data} />
-      </XYPlot>
-    );
+    return <></>;
   },
 };

@@ -32,6 +32,7 @@ router.get('/irrigate', async (req, res) => {
     where: where,
     include: [{ model: FarmableLand }],
     order: [['createdAt', 'DESC']],
+    limit: 60,
   });
 
   res.status(200).send({
