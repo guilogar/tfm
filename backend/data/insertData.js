@@ -72,7 +72,7 @@ async function insertDataTable() {
       maxWater = 15;
     }
 
-    const lengthMinutes = parseInt(randomNumberFixed(50, 60, 0));
+    const lengthMinutes = parseInt(randomNumberFixed(30, 40, 0));
     await createIrrigate(
       lengthMinutes * randomNumberFixed(minWater, maxWater, 2),
       lengthMinutes,
@@ -81,7 +81,7 @@ async function insertDataTable() {
       targetDay
     );
     await createIrrigate(
-      lengthMinutes * randomNumberFixed(minWater, maxWater, 2),
+      lengthMinutes * randomNumberFixed(minWater, maxWater, 2) * 1.5,
       lengthMinutes,
       farm2.id,
       targetDay,

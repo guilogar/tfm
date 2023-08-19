@@ -1,3 +1,11 @@
 svg > path {
   fill: none;
 }
+
+div.linesGraph {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  vertical-align: middle;
+  align-items: center;
+}

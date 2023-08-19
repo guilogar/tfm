@@ -27,10 +27,18 @@ const HistoricPreditions: React.FC = () => {
   const { t } = useTranslation();
   const api = getApi();
 
-  const [searchText, setSearchText] = useState<string | null>(null);
+  const [farmableLands, setFarmableLands] = useState<Array<any>>([]);
+
+  const getFarms = async () => {
+    const { data } = await api.get('/farmableLand');
+    return data.lands;
+  };
 
   useEffect(() => {
-    (async () => {})();
+    (async () => {
+      const farms = await getFarms();
+      setFarmableLands(farms);
+    })();
   }, []);
 
   return (
@@ -41,21 +49,33 @@ const HistoricPreditions: React.FC = () => {
           writeAction={() => {}}
           cancelAction={() => {}}
           CreateButton={null}
+          showIconSearch={false}
         />
       </IonHeader>
       <IonContent>
         <IonList>
-          <IonItem
-            className={''}
-            routerLink={'/dashboard/page/HistoricPredictions/IRRIGATES'}
-            routerDirection="none"
-            lines="none"
-            detail={false}
-          >
-            <IonIcon slot="start" ios={rainyOutline} md={rainySharp} />
-            <IonLabel>{t('IRRIGATES')}</IonLabel>
-          </IonItem>
-          <IonItem
+          {farmableLands.map((farmableLand, index) => {
+            return (
+              <IonItem
+                className={''}
+                routerLink={
+                  '/dashboard/page/HistoricPredictions/IRRIGATES/' +
+                  farmableLand.name
+                }
+                routerDirection="none"
+                lines="none"
+                detail={false}
+                key={index}
+              >
+                <IonIcon slot="start" ios={rainyOutline} md={rainySharp} />
+                <IonLabel>
+                  {t('IRRIGATES')} - {farmableLand.name}
+                </IonLabel>
+              </IonItem>
+            );
+          })}
+
+          {/* <IonItem
             className={''}
             routerLink={'/dashboard/page/HistoricPredictions/PHYTOSANITARIES'}
             routerDirection="none"
@@ -64,7 +84,7 @@ const HistoricPreditions: React.FC = () => {
           >
             <IonIcon slot="start" ios={eyedropOutline} md={eyedropSharp} />
             <IonLabel>{t('PHYTOSANITARYS')}</IonLabel>
-          </IonItem>
+          </IonItem> */}
         </IonList>
       </IonContent>
     </IonPage>
