@@ -7,7 +7,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPRegressor
 
-from sqlalchemy import select
+from sqlalchemy import select, insert
 
 from models.irrigate import Irrigate
 from models.irrigate_predictions import IrrigatePredictions
@@ -122,7 +122,17 @@ for estimator in estimators:
             amountWater=round(prediction[0], 2),
             FarmableLandId=farmableLandId
         )
-        session.add(irrigatePrediction)
+
+        stmtIrrigatePrediction = select(IrrigatePredictions).where(
+            IrrigatePredictions.date == targetDate,
+            IrrigatePredictions.FarmableLandId == farmableLandId
+        )
+        ip = session.scalars(stmtIrrigatePrediction).first()
+
+        if not ip:
+            session.add(irrigatePrediction)
+        else:
+            pass
 
 session.flush()
 session.commit()
