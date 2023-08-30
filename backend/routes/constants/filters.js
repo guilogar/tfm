@@ -115,6 +115,25 @@ const getFilterEvent = (filter) => {
   ];
 };
 
+const getFilterDate = ({ column, startDate, endDate }) => {
+  return [
+    sequelize.where(sequelize.cast(sequelize.col(column), 'date'), {
+      [Op.gte]: startDate,
+    }),
+    sequelize.where(sequelize.cast(sequelize.col(column), 'date'), {
+      [Op.lte]: endDate,
+    }),
+  ];
+};
+
+const getFilterName = ({ column, name }) => {
+  return [
+    sequelize.where(sequelize.cast(sequelize.col(column), 'varchar'), {
+      [Op.iLike]: `%${name}%`,
+    }),
+  ];
+};
+
 const getFilterIrrigate = (filter) => {
   return [
     sequelize.where(
@@ -131,6 +150,53 @@ const getFilterIrrigate = (filter) => {
     ),
     sequelize.where(
       sequelize.cast(sequelize.col('Irrigate.createdAt'), 'varchar'),
+      {
+        [Op.iLike]: `%${filter}%`,
+      }
+    ),
+    sequelize.where(
+      sequelize.cast(sequelize.col('FarmableLand.name'), 'varchar'),
+      {
+        [Op.iLike]: `%${filter}%`,
+      }
+    ),
+    sequelize.where(
+      sequelize.cast(sequelize.col('FarmableLand.type'), 'varchar'),
+      {
+        [Op.iLike]: `%${filter}%`,
+      }
+    ),
+    sequelize.where(
+      sequelize.cast(sequelize.col('FarmableLand.area'), 'varchar'),
+      {
+        [Op.iLike]: `%${filter}%`,
+      }
+    ),
+  ];
+};
+
+const getFilterIrrigatePredictions = (filter) => {
+  return [
+    sequelize.where(
+      sequelize.cast(
+        sequelize.col('IrrigatePredictions.amountWater'),
+        'varchar'
+      ),
+      {
+        [Op.iLike]: `%${filter}%`,
+      }
+    ),
+    sequelize.where(
+      sequelize.cast(
+        sequelize.col('IrrigatePredictions.lengthMinutes'),
+        'varchar'
+      ),
+      {
+        [Op.iLike]: `%${filter}%`,
+      }
+    ),
+    sequelize.where(
+      sequelize.cast(sequelize.col('IrrigatePredictions.date'), 'varchar'),
       {
         [Op.iLike]: `%${filter}%`,
       }
@@ -177,5 +243,8 @@ module.exports = {
   getFilterPhytosanitary,
   getFilterEvent,
   getFilterIrrigate,
+  getFilterIrrigatePredictions,
   getFilterNotification,
+  getFilterDate,
+  getFilterName,
 };

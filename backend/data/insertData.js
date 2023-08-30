@@ -22,6 +22,11 @@ const { createCropFarm } = require('../routes/services/create-crop-farm');
 const {
   createPhytosanitaryCrop,
 } = require('../routes/services/create-phytosanitary-farm');
+const {
+  SUMMER_MONTHS,
+  YEARS_TO_IRRIGATE,
+  DAYS_PER_YEAR,
+} = require('../routes/constants/constants');
 
 // Re-build all tables
 async function rebuildTables() {
@@ -52,15 +57,33 @@ async function insertDataTable() {
     await createSensor(user.id, Math.random() > 0.5 ? farm1.id : farm2.id);
   }
 
-  for (let i = 0; i < 365; i++) {
+  for (let i = 0; i < YEARS_TO_IRRIGATE * DAYS_PER_YEAR; i++) {
     const today = new Date();
     const targetDay = new Date();
     targetDay.setDate(today.getDate() - i);
 
+    let minWater = 0;
+    let maxWater = 5;
+
+    const summerMonths = SUMMER_MONTHS.map((month) => month.value);
+
+    if (summerMonths.includes(targetDay.getMonth())) {
+      minWater = 10;
+      maxWater = 15;
+    }
+
+    const lengthMinutes = parseInt(randomNumberFixed(30, 40, 0));
     await createIrrigate(
-      randomNumberFixed(0, 30, 2),
-      parseInt(randomNumberFixed(0, 60, 0)),
-      Math.random() > 0.5 ? farm1.id : farm2.id,
+      lengthMinutes * randomNumberFixed(minWater, maxWater, 2),
+      lengthMinutes,
+      farm1.id,
+      targetDay,
+      targetDay
+    );
+    await createIrrigate(
+      lengthMinutes * randomNumberFixed(minWater, maxWater, 2) * 1.5,
+      lengthMinutes,
+      farm2.id,
       targetDay,
       targetDay
     );

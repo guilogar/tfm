@@ -8,7 +8,7 @@ export default [
     <HistoricPredictions />
   </Route>,
   <Route
-    path="/dashboard/page/HistoricPredictions/:id"
+    path="/dashboard/page/HistoricPredictions/:id/:farmName"
     key={index++}
     exact={true}
     component={SpecificHistoricPredictions}
