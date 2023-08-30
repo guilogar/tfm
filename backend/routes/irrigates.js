@@ -11,11 +11,25 @@ const {
   getUserFromJwt,
   getJwtFromRequest,
 } = require('../routes/services/get-user-auth');
-const { getFilterIrrigate } = require('./constants/filters');
+const {
+  getFilterIrrigate,
+  getFilterDate,
+  getFilterName,
+} = require('./constants/filters');
 
 router.get('/irrigate', async (req, res) => {
   const id = req.query.id !== undefined ? JSON.parse(req.query.id) : undefined;
   const filter = req.query.filter !== undefined ? req.query.filter : undefined;
+  const farmName =
+    req.query.farmName !== undefined ? req.query.farmName : undefined;
+  const startDate =
+    req.query.startDate !== undefined ? req.query.startDate : undefined;
+  const endDate =
+    req.query.endDate !== undefined ? req.query.endDate : undefined;
+  const orderBy =
+    req.query.orderBy !== undefined ? req.query.orderBy : 'createdAt';
+  const orderDirection =
+    req.query.orderDirection !== undefined ? req.query.orderDirection : 'DESC';
 
   const where =
     id !== undefined
@@ -24,14 +38,26 @@ router.get('/irrigate', async (req, res) => {
         }
       : {};
 
+  if (startDate && endDate && farmName) {
+    where[Op.and] = [
+      ...getFilterDate({
+        column: 'Irrigate.createdAt',
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+      }),
+      ...getFilterName({ column: 'FarmableLand.name', name: farmName }),
+    ];
+  }
+
   if (filter !== undefined) {
-    where[Op.or] = getFilterIrrigate(filter);
+    where[Op.or] = [...getFilterIrrigate(filter)];
   }
 
   const irrigates = await Irrigate.findAll({
     where: where,
     include: [{ model: FarmableLand }],
-    order: [['createdAt', 'DESC']],
+    order: [[orderBy, orderDirection]],
+    limit: process.env.MAX_RESULTS,
   });
 
   res.status(200).send({
