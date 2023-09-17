@@ -98,8 +98,8 @@ print(
     time_series_arima_score
 )
 
-neural_condition = neural_estimator_score < 0 or neural_estimator_score < MIN_SCORE_ESTIMATOR
-arima_condition = time_series_arima_score < 0 or time_series_arima_score < MIN_SCORE_ESTIMATOR
+neural_condition = neural_estimator_score < MIN_SCORE_ESTIMATOR
+arima_condition = time_series_arima_score < MIN_SCORE_ESTIMATOR
 if neural_condition and arima_condition:
     sys.exit(
         "The score of estimator is under " +
