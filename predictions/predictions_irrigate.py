@@ -6,8 +6,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPRegressor
+from sklearn import metrics
 
-from sqlalchemy import select, insert
+from statsmodels.tsa.arima.model import ARIMA, ARIMAResultsWrapper
+
+from sqlalchemy import select
+from sqlalchemy.sql import func
 
 from models.irrigate import Irrigate
 from models.irrigate_predictions import IrrigatePredictions
@@ -23,7 +27,7 @@ engine, session = get_session_engine(
     host=arguments["--host"], database=arguments["--database"]
 )
 
-stmt = select(Irrigate)
+stmt = select(Irrigate).where(Irrigate.createdAt < func.now())
 irrigates = session.scalars(stmt).all()
 
 dataX = []
@@ -73,12 +77,30 @@ neural_estimator = Pipeline(
 neural_estimator.fit(X_train, y_train)
 neural_estimator_score = neural_estimator.score(X_test, y_test)
 
+time_series_arima = ARIMA(y_train)
+time_series_arima_fit = time_series_arima.fit()
+time_series_arima_predictions = time_series_arima_fit.predict(
+    start=len(X_train),
+    end=len(X_train) + len(X_test) - 1
+)
+time_series_arima_score = metrics.r2_score(
+    y_test,
+    time_series_arima_predictions
+)
+
 print(
-    'The Score of the neural estimator is =>',
+    'The R^2 Score of the Neural Network estimator is =>',
     neural_estimator_score
 )
 
-if neural_estimator_score < MIN_SCORE_ESTIMATOR:
+print(
+    'The R^2 Score of the ARIMA estimator is =>',
+    time_series_arima_score
+)
+
+neural_condition = neural_estimator_score < MIN_SCORE_ESTIMATOR
+arima_condition = time_series_arima_score < MIN_SCORE_ESTIMATOR
+if neural_condition and arima_condition:
     sys.exit(
         "The score of estimator is under " +
         str(MIN_SCORE_ESTIMATOR) + ". Aborting!"
@@ -87,6 +109,17 @@ if neural_estimator_score < MIN_SCORE_ESTIMATOR:
 estimators = [
     {'name': 'neural', 'pipeline_estimator': neural_estimator}
 ]
+
+if time_series_arima_score > neural_estimator_score:
+    estimators = [
+        {'name': 'neural', 'pipeline_estimator': time_series_arima_fit}
+    ]
+    print('Using time series arima estimator...')
+else:
+    estimators = [
+        {'name': 'neural', 'pipeline_estimator': neural_estimator}
+    ]
+    print('Using neural network estimator...')
 
 days = int(arguments["--days"])
 
@@ -112,9 +145,21 @@ for estimator in estimators:
                 'lengthMinutes', 'year', 'month', 'day', 'FarmableLandId'
             ]
         )
-        prediction = estimator['pipeline_estimator'].predict(
-            predictX
-        )
+
+        try:
+            prediction = [0]
+            if isinstance(estimator['pipeline_estimator'], Pipeline):
+                prediction = estimator['pipeline_estimator'].predict(
+                    predictX
+                )
+            elif isinstance(estimator['pipeline_estimator'], ARIMAResultsWrapper):
+                prediction = estimator['pipeline_estimator'].predict(
+                    start=0,
+                    end=0
+                )
+            prediction = prediction.to_numpy()
+        except:
+            pass
 
         irrigatePrediction = IrrigatePredictions(
             date=targetDate,
